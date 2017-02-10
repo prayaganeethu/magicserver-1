@@ -130,8 +130,16 @@ def build_routes():
     server.add_route('get', '/admin', admin)
     server.add_route('post', '/new_user', new_user)
 
+def logger(request,response):
+    print 'Got the',request['method'],'method from client',request['address'],'for',request['path']
+    return request
+
+def put_middleware():
+	server.add_middleware(logger)
 
 if __name__ == "__main__":
     port = int(raw_input("PORT>"))
+    put_middleware()
     build_routes()
-    server.start_server("127.0.0.1", port, 20)
+    server.start_server("0.0.0.0", port, 20)
+

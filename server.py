@@ -12,6 +12,8 @@ ROUTES = {
     'post': {}
 }
 
+MIDDLEWARE = []
+
 CONTENT_TYPE = {
     'html': 'text/html',
     'css': 'text/css',
@@ -34,6 +36,14 @@ def add_route(method, path, func):
     '''
     ROUTES[method][path] = func
 
+def add_middleware(func):
+    MIDDLEWARE.append(func)
+
+
+def invoke_middleware(request, response):
+    for funct in MIDDLEWARE:
+        funct(request,response)
+
 
 #Server Functions
 def spwan_thread(func, arg, daemon):
@@ -50,6 +60,7 @@ def start_server(hostname, port=8080, nworkers=20):
 
     Initialise socket and listen
    '''
+    #print port
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.bind((hostname, port))
@@ -171,6 +182,7 @@ def request_handler(request):
     '''Request Handler'''
     response = {}
     session_handler(request, response)
+    invoke_middleware(request, response)
     method_handler(request, response)
 
 
@@ -291,6 +303,7 @@ def response_handler(request, response):
     response['Server'] = 'magicserver0.1'
     response_string = response_stringify(response)
     request['socket'].send(response_string)
+    #print(response)
     if request['header']['Connection'] != 'keep-alive':
         request['socket'].close()
 
@@ -334,6 +347,7 @@ def send_html_handler(request, response, content):
 
     Add html content to response
     '''
+    #print(content)
     if content:
         response['content'] = content
         response['Content-type'] = 'text/html'
