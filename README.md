@@ -1,6 +1,6 @@
-# magicserver
+# middleware enabled magicserver
 
-Functional web server in Python
+Functional web server in Python with a simple middleware to analyze the http requests
 
 ## Install
 
